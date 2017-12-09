@@ -2,7 +2,7 @@
 
 namespace framework;
 
-require_once realpath(dirname(__FILE__))  . '/bootstrap.php';
+require_once realpath(dirname(__FILE__)) . '/bootstrap.php';
 
 /**
  * 开发框架核心文件
@@ -220,7 +220,7 @@ class HornetEngine
         // 性能分析日志
         $this->xhprofHandler();
 
-        spl_autoload_register([$this,'autoload'] );
+        spl_autoload_register([ $this, 'autoload' ]);
 
 
     }
@@ -260,7 +260,7 @@ class HornetEngine
             $uri = substr($uri, 0, $qm);
         }
         $rewrite = trim(substr($uri, strlen($base)), '/');
-        $params = false !== strpos($rewrite, '/') ? explode('/', $rewrite) : ( $rewrite ? array( 0 => $rewrite ) : array() );
+        $params = false !== strpos($rewrite, '/') ? explode('/', $rewrite) : ( $rewrite ? [0=>$rewrite] : [] );
         $ret['target'] = $ret['params'] = $params;
 
         $common_config = static::getCommonConfigVar('common');
@@ -313,14 +313,14 @@ class HornetEngine
      */
     public function route()
     {
-        if ( !empty($this->mod) ) {
-            if ( $this->mod == static::MOD_API_NAME ) {
+        if (!empty($this->mod)) {
+            if ($this->mod == static::MOD_API_NAME) {
                 $this->cmd = $this->ctrl . '.' . $this->action;
             }
         }
-        if ( $this->cmd != '' ) {
+        if ($this->cmd != '') {
             $cmdParams = explode('.', $this->cmd);
-            if ( count($cmdParams) > 2 ) {
+            if (count($cmdParams) > 2) {
                 $this->mod = $cmdParams[0];
                 $this->cmd = $cmdParams[1] . '.' . $cmdParams[2];
             }
@@ -333,14 +333,14 @@ class HornetEngine
     private function autoload($class)
     {
         //var_dump($class);
-        $class = str_replace( 'main\\', '', $class );
+        $class = str_replace('main\\', '', $class);
 
-        $file = realpath(dirname( $this->app_path. '/../../')) .DS. $class . '.php';
+        $file = realpath(dirname($this->app_path . '/../../')) . DS . $class . '.php';
         //var_dump($file);
         //$file = str_replace( 'main\\', '', $file );
-        $file = str_replace( ['\\','//'], [DS,DS], $file );
+        $file = str_replace([ '\\', '//' ], [ DS, DS ], $file);
         //var_dump($file);
-        if ( is_file($file) ) {
+        if (is_file($file)) {
             require_once $file;
             return;
         }
@@ -425,7 +425,7 @@ class HornetEngine
             // 执行结束检验结果类型
             $apiProtocol->builder('200', $result, '', $this->format);
             $jsonStr = $apiProtocol->get_response();
-            if ( $this->format == 'json' && $this->enable_reflect_method) {
+            if ( $this->format == 'json' && $this->enable_reflect_method ) {
                 $return_obj = json_decode(json_encode($result));
                 $this->validReturnJson($reflectMethod, $apiProtocol, $return_obj, $jsonStr);
             }
@@ -665,8 +665,8 @@ class HornetEngine
                 $traces = var_export($exception->getTrace(), true);
             }
             $vars = [];
-            $vars['traces']  = $traces;
-            $vars['code']    = $exception->getCode();
+            $vars['traces'] = $traces;
+            $vars['code'] = $exception->getCode();
             $vars['message'] = $exception->getMessage();
             $this->render($this->exception_page, $vars);
         }
@@ -831,14 +831,14 @@ class HornetEngine
                 )
             ));
 
-            $xhprofRoot = $this->xhprof_root ;
+            $xhprofRoot = $this->xhprof_root;
             if ( $this->cmd ) {
                 $name = $this->cmd;
             } else {
                 $name = $this->ctrl . '.' . $this->action;
             }
             $name = str_replace('.', '_', $name);
-            if(file_exists($xhprofRoot . "xhprof_lib/utils/xhprof_lib.php")){
+            if ( file_exists($xhprofRoot . "xhprof_lib/utils/xhprof_lib.php") ) {
                 $saveXhprof = create_function('$xhprof_root,$name', '$xhprof_data = xhprof_disable();
                                                                 ini_set("xhprof.output_dir",$outputDir);
                                                                 include_once $xhprofRoot . "xhprof_lib/utils/xhprof_lib.php";
@@ -849,7 +849,7 @@ class HornetEngine
             ');
                 register_shutdown_function($saveXhprof, $xhprofRoot, $name);
             }
-            }
+        }
 
     }
 
