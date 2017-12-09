@@ -20,8 +20,9 @@
   "require-dev": {
   },
   "autoload": {
-    "files": [
-      "src/framework/bootstrap.php"
-    ]
+    "files":["src/bootstrap.php","src/function.php"],
+    "psr-4": {
+      "framework\\": "src/"
+    }
   }
 }
