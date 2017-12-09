@@ -22,7 +22,7 @@ function xphp_autoload($class)
     $file = APP_PATH .DS. $class . '.php';
     $file = str_replace( 'main\\', '', $file );
     $file = str_replace( '\\', DS, $file );
-   var_dump($file);
+    //var_dump($file);
     if ( is_file($file) ) {
         require_once $file;
         return;
