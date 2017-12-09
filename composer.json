@@ -1,8 +1,8 @@
 
 {
-  "name": "Xphp/framework",
+  "name": "Hornet/framework",
   "description": "The Hornet Framework.",
-  "keywords": ["framework", "Xphp"],
+  "keywords": ["framework", "Hornet"],
   "license": "MIT",
   "homepage": "https://github.com/gopeak/hornet-framework",
   "support": {

@@ -9,24 +9,13 @@
 namespace Framework;
 
 
-
 /**
- * 业务逻辑异常处理类
+ * 开发框架本身异常
+ * Class XphpException
+ * @package main\xphp
  */
-class XphpLogicException extends \Exception
+class HornetCoreException extends \Exception
 {
-
-    /**
-     * 那些用户可以trace
-     * @var array
-     */
-    protected $trace_uids;
-
-    /**
-     *是否trace
-     */
-    protected $is_trace = true;
-
 
     public function __construct($code, $msg)
     {

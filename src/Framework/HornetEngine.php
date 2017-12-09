@@ -7,7 +7,7 @@ require_once realpath(dirname(__FILE__))  . '/bootstrap.php';
 /**
  * 开发框架核心文件
  */
-class XphpEngine
+class HornetEngine
 {
     /**
      * 页面上下文所要执行的控制器类名称
@@ -357,7 +357,7 @@ class XphpEngine
 
             $api_protocol_class = sprintf("main\\%s\\protocol\\%s", $this->current_app, $this->api_protocol_class);
             if ( !class_exists($api_protocol_class) ) {
-                throw new XphpCoreException($api_protocol_class . ' no found', 500);
+                throw new HornetCoreException($api_protocol_class . ' no found', 500);
             }
             $apiProtocol = new $api_protocol_class($this->enable_trace);
 
@@ -436,11 +436,11 @@ class XphpEngine
             }
             closeResources();
 
-        } catch ( XphpCoreException  $e ) { // 捕获开发框架异常
+        } catch ( HornetCoreException  $e ) { // 捕获开发框架异常
 
             $this->handleXphpException($e);
 
-        } catch ( XphpLogicException  $e ) { // 捕获自定义异常
+        } catch ( HornetLogicException  $e ) { // 捕获自定义异常
 
             $this->handleApiException($apiProtocol, $e);
 
@@ -538,7 +538,7 @@ class XphpEngine
             unset($ctrlObj, $method);
             register_shutdown_function("closeResources");
 
-        } catch ( XphpLogicException $e ) {
+        } catch ( HornetLogicException $e ) {
 
             $this->handleCtrlException($e);
 
