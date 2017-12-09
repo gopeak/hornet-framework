@@ -17,7 +17,7 @@
   ],
   "require": {
   },
-  "require-dev": { 
+  "require-dev": {
   },
   "autoload": {
     "files": [
