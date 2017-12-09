@@ -1,0 +1,37 @@
+
+{
+  "name": "Xphp/framework",
+  "description": "The Hornet Framework.",
+  "keywords": ["framework", "Xphp"],
+  "license": "MIT",
+  "homepage": "https://github.com/gopeak/hornet-framework",
+  "support": {
+    "issues": "https://github.com/gopeak/hornet-framework/issues",
+    "source": "https://github.com/gopeak/hornet-framework"
+  },
+  "authors": [
+    {
+      "name": "Sven wei",
+      "email": "121642038@qq.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6",
+    "ext-mbstring": "*",
+    "league/flysystem": "~1.0",
+    "monolog/monolog": "~1.12",
+    "psr/container": "~1.0",
+    "psr/simple-cache": "^1.0",
+    "ramsey/uuid": "~3.0"
+  },
+  "require-dev": {
+    "mockery/mockery": "~1.0",
+    "phpunit/phpunit": "~6.0",
+    "predis/predis": "^1.1.1"
+  },
+  "autoload": {
+    "files": [
+      "src/Framework/bootstrap.php"
+    ]
+  }
+}
