@@ -1,5 +1,5 @@
 <?php
-namespace Framework;
+namespace framework;
 
 /**
  * Created by PhpStorm.

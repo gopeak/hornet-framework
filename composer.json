@@ -1,8 +1,8 @@
 
 {
-  "name": "Hornet/framework",
+  "name": "hornet/framework",
   "description": "The Hornet Framework.",
-  "keywords": ["framework", "Hornet"],
+  "keywords": ["framework", "hornet"],
   "license": "MIT",
   "homepage": "https://github.com/gopeak/hornet-framework",
   "support": {
@@ -31,7 +31,7 @@
   },
   "autoload": {
     "files": [
-      "src/Framework/bootstrap.php"
+      "src/framework/bootstrap.php"
     ]
   }
 }

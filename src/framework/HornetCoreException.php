@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: weichaoduo
- * Date: 17/12/8
- * Time: 下午5:46
- */
 
-namespace Framework;
+namespace framework;
 
 
 /**
