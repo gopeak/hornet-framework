@@ -37,7 +37,6 @@ class FilterSqlInject
     public function __construct($logPath)
     {
         $this->logPath = $logPath;
-
     }
 
     /**
@@ -49,11 +48,10 @@ class FilterSqlInject
      */
     public function checkAttack($strFilterKey, $strFilterValue, $arrFilterReq)
     {
-        if ( is_array($strFilterValue) ) {
+        if (is_array($strFilterValue)) {
             $strFilterValue = @implode('', $strFilterValue);
         }
-        if ( preg_match("/" . $arrFilterReq . "/is", $strFilterValue) == 1 ) {
-
+        if (preg_match("/" . $arrFilterReq . "/is", $strFilterValue) == 1) {
             $logData = $_SERVER["REMOTE_ADDR"] . " " . strftime("%Y-%m-%d %H:%M:%S") . " " . $_SERVER["PHP_SELF"]
                 . " " . $_SERVER["REQUEST_METHOD"] . "  " . $strFilterKey . "  " . $strFilterValue . "\n";
             file_put_contents($this->logPath . '/' . date('Y-m-d') . '.log', $logData, FILE_APPEND);
@@ -66,20 +64,17 @@ class FilterSqlInject
      */
     public function filterInput()
     {
-        foreach ( $_GET as $key => $value ) {
+        foreach ($_GET as $key => $value) {
             $this->checkAttack($key, $value, $this->getFilter);
         }
-        foreach ( $_POST as $key => $value ) {
+        foreach ($_POST as $key => $value) {
             $this->checkAttack($key, $value, $this->postFilter);
         }
-        foreach ( $_COOKIE as $key => $value ) {
+        foreach ($_COOKIE as $key => $value) {
             $this->checkAttack($key, $value, $this->cookieFilter);
         }
-        foreach ( $_REQUEST as $key => $value ) {
+        foreach ($_REQUEST as $key => $value) {
             $this->checkAttack($key, $value, $this->postFilter);
         }
-
     }
-
-
 }

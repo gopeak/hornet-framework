@@ -2,8 +2,6 @@
 
 namespace framework;
 
-
-
 /**
  * 业务逻辑异常处理类
  */
