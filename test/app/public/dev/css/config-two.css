@@ -1,0 +1,55 @@
+.add-info {
+				/*width: 500px;*/
+				margin: 20px;
+			}
+			
+			.add-info p {
+				margin: 15px 0;
+			}
+			
+			.add-info h1 {
+				font-size: 16px;
+			}
+			
+			.oTable {
+				width: 1030px;
+				margin: auto;
+			}
+			
+			.oh1 {
+				font-size: 16px;
+				margin-left: 20px;
+				margin-bottom: 10px;
+			}
+			
+			.conten-table {
+				height: 370px;
+				max-height: 370px;
+				margin: auto;
+				overflow: auto;
+			}
+			
+			.open span {
+				cursor: pointer;
+				padding-left: 3px;
+				color: #2196F3;
+			}
+			
+			.add-info-btn {
+				margin: 0;
+				background-color: #eee;
+				text-align: right;
+				margin-top: 9px;
+			}
+			
+			.add-info-btn span {
+				display: inline-block;
+				width: 60px;
+				height: 20px;
+				padding: 5px;
+				text-align: center;
+				border-radius: 6px;
+				border: 1px solid #333333;
+				margin: 10px 10px;
+				cursor: pointer;
+			}

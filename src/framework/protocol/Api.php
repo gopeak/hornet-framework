@@ -36,7 +36,7 @@ class Api implements Iprotocol
         $this->enableTrace = $enableTrace;
     }
 
-    public function getResponse(): string
+    public function getResponse()
     {
 
         $obj = new \stdClass();
@@ -65,12 +65,18 @@ class Api implements Iprotocol
             $item = $dom->createElement("root");
             $dom->appendChild($item);
         }
+        //var_dump($obj);
         foreach ($obj as $key => $val) {
             $itemx = $dom->createElement(is_string($key) ? $key : "item");
             $item->appendChild($itemx);
+
             if (!is_object($val)) {
-                $text = $dom->createTextNode($val);
-                $itemx->appendChild($text);
+                if (is_array($val)) {
+                    $val = $this->arrToXml($val,$dom, $itemx);
+                } else {
+                    $text = $dom->createTextNode($val);
+                    $itemx->appendChild($text);
+                }
             } else {
                 $this->objectToXml($val, $dom, $itemx);
             }
@@ -78,7 +84,31 @@ class Api implements Iprotocol
         return $dom->saveXML();
     }
 
-    private function format($obj): string
+    private function arrToXml($arr, $dom = 0, $item = 0)
+    {
+        if (!$dom) {
+            $dom = new \DOMDocument("1.0");
+        }
+        if (!$item) {
+            $item = $dom->createElement("root");
+            $dom->appendChild($item);
+        }
+        //var_dump($obj);
+        foreach ($arr as $key => $val) {
+            $itemx = $dom->createElement(is_string($key) ? $key : "item");
+            $item->appendChild($itemx);
+
+            if (!is_array($val)) {
+                $text = @$dom->createTextNode($val);
+                $itemx->appendChild($text);
+            } else {
+                $this->arrToXml($val, $dom, $itemx);
+            }
+        }
+        return $dom->saveXML();
+    }
+
+    private function format($obj)
     {
 
         if ($this->retDirectStr && $this->format == 'json') {
@@ -97,6 +127,7 @@ class Api implements Iprotocol
 
         if ($this->format == 'xml') {
             header('Content-type: application/xml; charset=utf-8');
+            $arr = (array)$obj;
             return $this->objectToXml($obj);
         }
         // json
