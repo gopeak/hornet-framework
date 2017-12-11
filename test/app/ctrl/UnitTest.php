@@ -7,8 +7,10 @@
  */
 
 namespace main\app\ctrl;
+
 use \main\app\model\UserModel;
 use \main\app\classes\UserAuth;
+
 /**
  * 配合单元测试的控制器类
  * Class unitTest
@@ -16,25 +18,23 @@ use \main\app\classes\UserAuth;
  */
 class UnitTest extends BaseCtrl
 {
-
-    public function auth(){
-
-        if( !isset( $_REQUEST['openid'] ) ){
-            die( 'param error');
+    public function auth()
+    {
+        if (!isset($_REQUEST['openid'])) {
+            die('param error');
         }
         $openid = $_REQUEST['openid'];
 
         $userModel = new UserModel();
         $conditions['openid'] = $openid;
-        $user = $userModel->getRow('*',$conditions );
+        $user = $userModel->getRow('*', $conditions);
 
-        if( !isset($user['uid']) ){
-            die( 'user is empty');
+        if (!isset($user['uid'])) {
+            die('user is empty');
         }
 
         $auth = UserAuth::getInstance();
-        $auth->login(  $user ) ;
+        $auth->login($user) ;
         echo 'ok';
-
     }
 }

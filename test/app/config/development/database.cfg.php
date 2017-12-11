@@ -17,7 +17,7 @@
     'log_db' => 
     array (
       'driver' => 'mysql',
-      'host' => 'localhost',
+      'host' => '127.0.0.1',
       'port' => '3306',
       'user' => 'root',
       'password' => '',
@@ -36,6 +36,24 @@
     array (
       0 => 'UnitTestUnitModel',
       1 => 'UnitTestUnitModel',
+      2 => 'UnitTestUnitModel',
+      3 => 'UnitTestUnitModel',
+      4 => 'UnitTestUnitModel',
+      5 => 'UnitTestUnitModel',
+      6 => 'UnitTestUnitModel',
+      7 => 'UnitTestUnitModel',
+      8 => 'UnitTestUnitModel',
+      9 => 'UnitTestUnitModel',
+      10 => 'UnitTestUnitModel',
+      11 => 'UnitTestUnitModel',
+      12 => 'UnitTestUnitModel',
+      13 => 'UnitTestUnitModel',
+      14 => 'UnitTestUnitModel',
+      15 => 'UnitTestUnitModel',
+      16 => 'UnitTestUnitModel',
+      17 => 'UnitTestUnitModel',
+      18 => 'UnitTestUnitModel',
+      19 => 'UnitTestUnitModel',
     ),
   ),
 );

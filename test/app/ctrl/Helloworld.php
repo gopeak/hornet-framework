@@ -10,9 +10,8 @@ namespace main\app\ctrl;
 
 class HelloWorld extends BaseCtrl
 {
-
-    public function index(){
-
+    public function index()
+    {
         echo 'Hello world!';
     }
 }

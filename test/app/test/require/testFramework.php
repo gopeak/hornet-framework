@@ -210,6 +210,7 @@ class testFramework extends BaseTestCase
             if (! class_exists( $model_default_class )) {
                 $this->fail( 'class '.$model_default_class.' no found' );
             }
+
             $model_default_obj = new $model_default_class( );
             $model_default_obj->realConnect();
 
@@ -293,15 +294,15 @@ class testFramework extends BaseTestCase
     {
         // 创建开发框架配置
         $config = new \stdClass();
-        $config->current_app = APP_NAME;
-        $config->app_path = APP_PATH;
-        $config->xphp_root_path =  ROOT_PATH;
-        $config->app_status = APP_STATUS;
-        $config->enable_trace = ENABLE_TRACE;
-        $config->enable_xhprof = ENABLE_XHPROF;
-        $config->xhprof_rate = XHPROF_RATE;
-        $config->enable_write_req_log = WRITE_REQUEST_LOG;
-        $config->enable_security_map = SECURITY_MAP_ENABLE;
+        $config->currentApp = APP_NAME;
+        $config->appPath = APP_PATH;
+        $config->appStatus = APP_STATUS;
+        $config->enableTrace = ENABLE_TRACE;
+        $config->enableXhprof = ENABLE_XHPROF;
+        $config->xhprofRate = XHPROF_RATE;
+        $config->enableWriteReqLog = WRITE_REQUEST_LOG;
+        $config->enableSecurityMap = SECURITY_MAP_ENABLE;
+        $config->exceptionPage = VIEW_PATH.'exception.php';
 
         $exception_page_file = VIEW_PATH.'unit_test_exception_page.php';
         $exception_page_source = "<?php \n \n echo '111';";
@@ -316,7 +317,8 @@ class testFramework extends BaseTestCase
         $_SERVER['REQUEST_URI'] = '/framework/show_exception';
         ob_start();
         // 实例化开发框架对象
-        $xphp = new  \Xphp( $config );
+        require_once PRE_APP_PATH.'/../src/framework/bootstrap.php';
+        $xphp = new  \framework\HornetEngine( $config );
         $xphp->route();
         $output = ob_get_contents();
 

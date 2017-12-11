@@ -10,6 +10,7 @@ date_default_timezone_set('Asia/Shanghai');
 // 项目文件根目录（文件系统，即本文件所在目录）
 define('APP_PATH', realpath(dirname(__FILE__)) . '/');
 define('PRE_APP_PATH', realpath(dirname(__FILE__).'/../') . '/');
+define('PRE_ROOT_PATH', PRE_APP_PATH);
 
 // 加载自定义的函数库
 include_once APP_PATH . 'function/autoload.php';
