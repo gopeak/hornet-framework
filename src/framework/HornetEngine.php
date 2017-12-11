@@ -410,6 +410,7 @@ class HornetEngine
                 throw new \Exception('Api invoker error: cmd param error!', 500);
             }
             list ($service, $method) = explode('.', $this->cmd);
+            $service = ucfirst($service);
             $service = $this->underlineToUppercase($service);
             $serviceClass = sprintf("main\\%s\\api\\%s", $this->currentApp, $service);
             if (!empty($this->mod) && $this->mod != 'api') {
@@ -946,7 +947,7 @@ class HornetEngine
             }
             if (!isset($srvMapConfig[$class])) {
                 unset($mapConfig);
-                throw new \Exception("Error: $class in map config undefined ", 501);
+                throw new \Exception("Error: {$route} {$class} in map config undefined ", 501);
             }
 
             // v($srv_map_config);

@@ -85,9 +85,8 @@ class testEnv extends BaseTestCase
      */
     public function testExtension()
     {
-        $require_extesions = ['curl','redis','gd','hash','json','mbstring','mcrypt',
-            'mongodb','mysqlnd','pcre','PDO','pdo_mysql','Reflection',
-            'session'];
+        $require_extesions = ['curl','gd','hash','json','mbstring','mcrypt',
+            'mysqlnd','pcre','PDO','pdo_mysql','Reflection','session'];
 
         foreach ($require_extesions as $ext) {
             $this->assertTrue(extension_loaded($ext), 'require extesions: '.$ext);
