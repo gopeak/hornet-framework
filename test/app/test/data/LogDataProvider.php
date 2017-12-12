@@ -86,7 +86,7 @@ class LogDataProvider
             $uid = static::UID;;
         }
         $logModel =   LogBaseModel::getInstance();
-        $conditions['uid'] = $uid;
+        $conditions['id'] = $uid;
         $logModel->delete( $conditions );
 
     }

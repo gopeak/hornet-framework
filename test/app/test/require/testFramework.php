@@ -173,6 +173,8 @@ class testFramework extends BaseTestCase
     }
 
 
+
+
     // 测试分库功能
     public function testSplitDatabase()
     {
@@ -205,7 +207,9 @@ class testFramework extends BaseTestCase
         $w_ret = $this->writeWithLock( $file,$new_config_source );
 
         if( $w_ret!==false ){
-
+            require_once MODEL_PATH.'BaseModel.php';
+            require_once MODEL_PATH.'DbModel.php';
+            require_once MODEL_PATH.$model_default.'.php';
             $model_default_class = sprintf( "main\\%s\\model\\%s" , APP_NAME, $model_default ) ;
             if (! class_exists( $model_default_class )) {
                 $this->fail( 'class '.$model_default_class.' no found' );
@@ -214,6 +218,7 @@ class testFramework extends BaseTestCase
             $model_default_obj = new $model_default_class( );
             $model_default_obj->realConnect();
 
+            require_once MODEL_PATH.$model_unit.'.php';
             $model_class_class = sprintf( "main\\%s\\model\\%s" , APP_NAME, $model_unit ) ;
             if (! class_exists( $model_class_class )) {
                 $this->fail( 'class '.$model_class_class.' no found' );
@@ -312,22 +317,24 @@ class testFramework extends BaseTestCase
             $this->fail( $exception_page_file." can not write");
             return;
         }
-        $config->exception_page =  $exception_page_file;
+        $config->exceptionPage =  $exception_page_file;
 
         $_SERVER['REQUEST_URI'] = '/framework/show_exception';
+        $_SERVER['SCRIPT_NAME'] = '';
         ob_start();
         // 实例化开发框架对象
+        file_put_contents( './aaa.log', var_export($_SERVER,true) );
         require_once PRE_APP_PATH.'/../src/framework/bootstrap.php';
-        $xphp = new  \framework\HornetEngine( $config );
-        $xphp->route();
+        $engine = new  framework\HornetEngine( $config );
+        $engine->route();
         $output = ob_get_contents();
-
         if(  $output!='111' ){
             $this->fail( $exception_page_file." not used");
         }
         unlink( $exception_page_file );
-        unset( $config, $xphp );
+        unset( $config, $engine );
         ob_end_flush();
+        //
     }
 
     /**
@@ -340,7 +347,7 @@ class testFramework extends BaseTestCase
 
 
     /**
-     * teardown执行后执行此方法
+     * Teardown 执行后执行此方法
      */
     public static function tearDownAfterClass()
     {

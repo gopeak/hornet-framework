@@ -37,7 +37,7 @@ class api implements Iprotocol
         $this->enable_trace = $enable_trace;
     }
 
-    public function get_response(  ):string
+    public function getResponse(  ):string
     {
 
         $obj = new \stdClass();

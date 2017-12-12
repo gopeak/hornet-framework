@@ -29,13 +29,4 @@ class UserLogic
         return $users;
     }
 
-
-    public function join( $limit = 100 )
-    {
-        $userModel = new UserModel();
-        $params['uid'] = '1';
-        $sql = "Select * from user left join dep on .. .  where  uid=:uid  ";
-        return $userModel->db->getRows( $sql,$params);
-
-    }
 }

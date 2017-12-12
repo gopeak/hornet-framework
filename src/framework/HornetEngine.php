@@ -145,6 +145,13 @@ class HornetEngine
     public $enableSecurityMap = true;
 
     /**
+     * 是否进行Xss攻击过滤
+     *
+     * @var bool
+     */
+    public $enableXssFilter = false;
+
+    /**
      * 是否启用反射功能
      *
      * @var bool
@@ -244,6 +251,13 @@ class HornetEngine
             $this->format = es(trimStr($_REQUEST['format']));
         }
 
+        if($this->enableXssFilter){
+            $_GET     && SafeFilter($_GET);
+            $_POST    && SafeFilter($_POST);
+            $_POST    && SafeFilter($_REQUEST);
+            $_COOKIE  && SafeFilter($_COOKIE);
+        }
+
         // custom error handler
         $errHandler = new ErrorHandler($this);
         set_error_handler(array($errHandler, 'errorHandler'));
@@ -261,6 +275,24 @@ class HornetEngine
         $this->xhprofHandler();
 
         spl_autoload_register([$this, 'autoload']);
+    }
+
+    /**
+     * fetch current property value
+     *
+     * @param $name
+     *
+     * @return mixed
+     */
+    public function getProperty( $name )
+    {
+        if( isset( $this->$name ) ){
+            return $this->$name;
+        }
+        if( isset( static::$name ) ){
+            return static::$name;
+        }
+        return null;
     }
 
     /**
@@ -325,7 +357,6 @@ class HornetEngine
         $this->method = $ret['method'];
         $this->mod = $ret['mod'];
         $this->target = $ret['target'];
-        // p($ret);
         return $ret;
     }
 

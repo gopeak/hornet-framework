@@ -181,7 +181,7 @@ class UserAuth
      */
     public function login($data, $duration = 0, $absolute = true)
     {
-        $_SESSION[self::SESSION_UID_KEY] = $data['uid'];
+        $_SESSION[self::SESSION_UID_KEY] = $data['id'];
         $_SESSION[self::SESSION_USER_INFO_KEY] = $data;
         $_SESSION[self::SESSION_EXPIRE_KEY] = $duration;
         $_SESSION[self::SESSION_ABS_KEY] = $absolute;

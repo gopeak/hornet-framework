@@ -16,5 +16,5 @@ interface Iprotocol
     public function builder( $ret ,$data ,$msg='', $format='json' );
 
 
-    public function get_response(  );
+    public function getResponse(  );
 }

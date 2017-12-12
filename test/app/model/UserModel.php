@@ -111,7 +111,7 @@ class UserModel extends DbModel
     {
         $uid    = $this->uid;
         $fileds	= '*';
-        $where  = array('uid'=>$uid);
+        $where  = array('id'=>$uid);
         $finally = $this->getRow($fileds,$where);
         return  $finally;
     }
@@ -122,24 +122,11 @@ class UserModel extends DbModel
      */
     public function getUserByUid($master_uid){
         $fileds	= '*';
-        $where  = array('uid'=>$master_uid);
+        $where  = array('id'=>$master_uid);
         $finally = $this->getRow($fileds,$where);
         return  $finally;
     }
 
-
-
-    public function getUserByOpenid( $openid )
-    {
-
-        $table	= $this->getTable();
-        $fileds	=	"*,{$this->primary_key} as k";
-        //$where	=	" Where `openid`='$openid'   ";
-        $where = ['openid' => trim($openid)];
-        $user	=	$this->getRow($fileds, $where );
-        return  $user;
-    }
- 
 
 
     /**

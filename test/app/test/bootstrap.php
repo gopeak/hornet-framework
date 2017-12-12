@@ -8,16 +8,17 @@ require_once TEST_PATH.'../globals.php';
 require_once TEST_PATH.'BaseTestCase.php';
 define('APP_URL', ROOT_URL);
 
-function autoload($class)
+function testAutoload($class)
 {
-    $class = str_replace('main\\', '', $class);
-    //var_dump($class );
-    $file = realpath(dirname($this->appPath . '/../../')) . '/' . $class . '.php';
-    $file = str_replace(['\\', '//'], ['/', '/'], $file);
-    //var_dump($file );
-    if (is_file($file)) {
-        include_once $file;
-        return;
+    if( strpos( $class,'main\\')!==false){
+        $class = str_replace('main\\', '', $class);
+        $file = realpath(dirname(APP_PATH. '/../../')) . '/' . $class . '.php';
+        $file = str_replace(['\\', '//'], ['/', '/'], $file);
+        if (is_file($file)) {
+            include_once $file;
+            return;
+        }
     }
 }
-spl_autoload_register( 'autoload');
+
+spl_autoload_register(  'testAutoload');

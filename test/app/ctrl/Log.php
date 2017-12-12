@@ -30,7 +30,7 @@ class Log extends BaseUserCtrl
         parent::__construct();
         $this->auth->checkLogin();
         $user = $this->auth->getUser();
-        $this->user_id = $user['uid'];
+        $this->user_id = $user['id'];
         $this->company_id = $user['company_id'];
     }
 
@@ -40,7 +40,7 @@ class Log extends BaseUserCtrl
     public function index()
     {
         $data['actions'] = LogBaseModel::getActions() ;
-        $this->render('log/Index.php' ,$data );
+        $this->render('log/index.php' ,$data );
 
     }
 

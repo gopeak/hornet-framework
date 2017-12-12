@@ -76,12 +76,9 @@ class BaseAppTestCase extends BaseTestCase
     {
         // 表单数据 $post_data
         $post_data = [];
-        $openid = MD5( time() );
         $post_data['phone'] = '170'.mt_rand(12345678,92345678);
-        $post_data['username'] = $post_data['phone'] ;
-        $post_data['openid'] =  $openid;
-        $post_data['realname'] = 'realname'.time();
-        $post_data['company_id'] = time();
+        $post_data['name'] = $post_data['phone'] ;
+        $post_data['company_id'] = time() ;
 
         list( $ret , $msg ) =static::$userModel->insert( $post_data );
         if( !$ret ){
@@ -89,13 +86,14 @@ class BaseAppTestCase extends BaseTestCase
             return;
         }
         // 绕过平台一账通进行授权
-        self::$user_curl->get( ROOT_URL.'unitTest/auth?openid='.$openid  );
+        $uid = $msg;
+        self::$user_curl->get( ROOT_URL.'unit_test/auth?uid='.$uid  );
         $resp = self::$user_curl->rawResponse;
         if( $resp!=='ok' ){
             var_dump( 'user auth failed,'. $resp );
             return;
         }
-        $conditions['openid'] = $openid;
+        $conditions['id'] = $uid;
         $user = static::$userModel->getRow('*',$conditions );
         return $user;
     }
@@ -104,12 +102,12 @@ class BaseAppTestCase extends BaseTestCase
 
     /**
      * 删除用户
-     * @param $openid
+     * @param $uid
      * @return bool
      */
-    public static  function deleteUser( $openid )
+    public static  function deleteUser( $uid )
     {
-        $conditions['openid'] = $openid;
+        $conditions['id'] = $uid;
         static::$userModel->delete( $conditions );
 
         return true;
@@ -119,11 +117,7 @@ class BaseAppTestCase extends BaseTestCase
     
     public static function tearDownAfterClass()
     {
-
-        self::deleteUser( self::$user['openid'] );
-        //清空对象资源
-        self::$app_token       = null;
-        
+        self::deleteUser( self::$user['id'] );
 
     }
 }
