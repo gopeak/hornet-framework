@@ -145,6 +145,13 @@ class HornetEngine
     public $enableSecurityMap = true;
 
     /**
+     * 是否进行Xss攻击过滤
+     *
+     * @var bool
+     */
+    public $enableXssFilter = false;
+
+    /**
      * 是否启用反射功能
      *
      * @var bool
@@ -242,6 +249,13 @@ class HornetEngine
         // require response format
         if (isset($_REQUEST['format'])) {
             $this->format = es(trimStr($_REQUEST['format']));
+        }
+
+        if($this->enableXssFilter){
+            $_GET     && SafeFilter($_GET);
+            $_POST    && SafeFilter($_POST);
+            $_POST    && SafeFilter($_REQUEST);
+            $_COOKIE  && SafeFilter($_COOKIE);
         }
 
         // custom error handler
@@ -343,7 +357,6 @@ class HornetEngine
         $this->method = $ret['method'];
         $this->mod = $ret['mod'];
         $this->target = $ret['target'];
-        // p($ret);
         return $ret;
     }
 

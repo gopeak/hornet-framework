@@ -119,7 +119,7 @@ class BaseCtrl
         header('Content-Type:application/json');
         $ajaxProtocol = new ajax();
         $ajaxProtocol->builder( '200', $data, $msg );
-        echo $ajaxProtocol->get_response();
+        echo $ajaxProtocol->getResponse();
     }
 
     /**
@@ -133,7 +133,7 @@ class BaseCtrl
         header('Content-Type:application/json');
         $ajaxProtocol = new ajax();
         $ajaxProtocol->builder( $code, $data, $msg );
-        echo $ajaxProtocol->get_response();
+        echo $ajaxProtocol->getResponse();
     }
 
     /**

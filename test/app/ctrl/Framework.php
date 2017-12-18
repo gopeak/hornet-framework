@@ -82,13 +82,21 @@ class Framework extends BaseCtrl
      * 触发错误异常
      * @return bool
      */
-    public function show_exception()
+    public function show_error()
     {
         timezone_open(1202229163);
         100/0;
         new \DateTimeZone(1202229163);
         echo 'ok';
     }
+    public function show_exception()
+    {
+        require_once '../../../src/framework/HornetLogicException.php';
+        throw  new \framework\HornetLogicException(500,'throw exception');
+        echo 'ok';
+    }
+
+
 
 
 

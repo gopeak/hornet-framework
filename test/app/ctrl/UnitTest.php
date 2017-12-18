@@ -20,16 +20,16 @@ class UnitTest extends BaseCtrl
 {
     public function auth()
     {
-        if (!isset($_REQUEST['openid'])) {
+        if (!isset($_REQUEST['uid'])) {
             die('param error');
         }
-        $openid = $_REQUEST['openid'];
+        $uid = $_REQUEST['uid'];
 
         $userModel = new UserModel();
-        $conditions['openid'] = $openid;
+        $conditions['id'] = $uid;
         $user = $userModel->getRow('*', $conditions);
 
-        if (!isset($user['uid'])) {
+        if (!isset($user['id'])) {
             die('user is empty');
         }
 

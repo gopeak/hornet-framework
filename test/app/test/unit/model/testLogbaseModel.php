@@ -36,7 +36,7 @@ class testLogBaseModel extends BaseTestCase
     {
         // 清空数据
         $logBaseModel = new LogBaseModel();
-        $conditions['uid'] = static::$user['uid'];
+        $conditions['uid'] = static::$user['id'];
         $logBaseModel->delete( $conditions );
 
     }
@@ -89,7 +89,6 @@ class testLogBaseModel extends BaseTestCase
             }
         }
     }
-
 
     /**
      * 测试单例对象
@@ -163,8 +162,5 @@ class testLogBaseModel extends BaseTestCase
 
         $logModel->deleteById( $msg );
     }
-
-
-
 
 }

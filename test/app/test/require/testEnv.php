@@ -290,7 +290,6 @@ class testEnv extends BaseTestCase
 
     /**
      * 测试Redis
-     * @expectException \Exception
      */
     public function testRedisServer()
     {
@@ -308,8 +307,8 @@ class testEnv extends BaseTestCase
             $this->assertEquals($test_value, $redis->get($test_key));
             $redis->delete($test_key);
             $redis->close();
-        } catch (\Exception $e) {
-            $this->fail('mongodb err: '.$e->getMessage());
+        }catch (\Exception $e) {
+            $this->fail('Redis err: '.$e->getMessage());
         }
     }
 
@@ -317,7 +316,7 @@ class testEnv extends BaseTestCase
      * 测试Mongodb
      * @expectException \Exception
      */
-    public function testMongoServer()
+    public function noTestMongoServer()
     {
         $mg_config  = getConfigVar('cache')['mongodb']['server'];
         try {
