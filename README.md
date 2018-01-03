@@ -1,4 +1,4 @@
-# hornet-framework
+
 <p align="center">
 	<a href="https://github.com/gopeak/hornet-framework">Hornet-framework</a>
 </p>
@@ -41,7 +41,6 @@ LMVC分别是 Logic逻辑 Model模型 View视图 Ctrl控制器，与传统的MVC
 
 ## LMVC开发模式
 ![lvmc](http://192.168.3.213/ismond/xphp/uploads/4ba3a2b1db4af130524e65e87696d946/lvmc.jpg)
-
 
 ## 待完成功能
 - **松耦合的设计**   
