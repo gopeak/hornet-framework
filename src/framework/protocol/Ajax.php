@@ -28,7 +28,7 @@ class Ajax implements Iprotocol
      * 获取ajax 返回的json格式
      * @return string
      */
-    public function getResponse(): string
+    public function getResponse()
     {
         $obj = new \stdClass();
         $obj->ret = $this->ret;
