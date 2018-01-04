@@ -90,12 +90,12 @@ class ErrorHandler
         // 如果异步服务器swoole不可用则写入文件
         if (!isset($server_status_config['swoole']) || !$server_status_config['swoole']) {
             return false;
-        }
-        $traces = print_r(debug_backtrace(), true);
+        } 
+        $reqData = substr(var_export($_GET, true),0, 1000)."\n<br>".substr(var_export($_POST, true),0, 10000);
         // 限制最大行数50行,防止获取代码
         $max_source_line = min(50, max(10, intval($error_config['max_source_line'])));
         $source = $this->readSource($errfile, $errline, $max_source_line);
-        $this->sendMailAsync($err_msg, $traces, $source);
+        $this->sendMailAsync($err_msg, $reqData, $source);
 
         return true;
     }
@@ -126,12 +126,16 @@ class ErrorHandler
         }
 
         $client = new \swoole_client(SWOOLE_SOCK_TCP); //异步非阻塞
-
+		$client->set(array(
+			'package_max_length'    => 2000000,  //协议最大长度
+			'socket_buffer_size'     => 1024*1024*2, //2M缓存区
+		));
         $async_config = $this->engine->getConfigVar('async');
         if (!$client->connect($async_config['async']['server']['host'], $async_config['async']['server']['port'])) {
             static::$swooleClientConnected = false;
             return null;
         }
+		
         static::$swooleClientConnected = true;
         return $client;
     }
@@ -140,9 +144,10 @@ class ErrorHandler
     /**
      * 异步的发送数据给swoole server,swoole server再交给 worker 执行
      * @param $err_msg
-     * @param $traces
+     * @param $reqData
+	 * @param $source
      */
-    private function sendMailAsync($err_msg, $traces, $source)
+    private function sendMailAsync($err_msg, $reqData, $source)
     {
         $error_config = $this->engine->getConfigVar('error');
 
@@ -150,11 +155,11 @@ class ErrorHandler
         $content = $err_msg;
         if (isset($error_config['mail_tpl'])) {
             $content = str_replace(
-                ['{{err_msg}}', '{{traces}}', '{{source}}'],
-                [$err_msg, $traces, $source],
+                ['{{err_msg}}', '{{req_data}}', '{{source}}'],
+                [$err_msg, $reqData, $source],
                 $error_config['mail_tpl']);
         }
-        $json_data = json_encode([ 'to'=>$error_config['email_notify'],'config'=>$this->engine->getConfigVar('email'), 'cmd' => 'email.send', 'subject' => $subject, 'content' => $content]);
+        $json_data = json_encode([ 'to'=>$error_config['email_notify'],'config'=>$this->engine->getConfigVar('email'), 'cmd' => 'email.send_by_api', 'subject' => $subject, 'content' => $content]);
 
         $swoole_client = $this->getSwooleClientInstance();
         if (static::$swooleClientConnected && !empty($swoole_client)) {
