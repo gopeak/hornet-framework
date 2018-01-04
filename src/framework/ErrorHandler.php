@@ -125,35 +125,13 @@ class ErrorHandler
             return null;
         }
 
-        $client = new swoole_client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_ASYNC); //异步非阻塞
+        $client = new \swoole_client(SWOOLE_SOCK_TCP); //异步非阻塞
 
-        $client->on("connect", function (swoole_client $cli) {
-            echo "Server connected\n";
-            static::$swooleClientConnected = true;
-        });
-
-        $client->on("error", function (swoole_client $cli) {
-            echo "error\n";
-            static::$swooleClientInstance = null;
-            static::$swooleClientConnected = false;
-        });
-
-        $client->on("close", function (swoole_client $cli) {
-            echo "Connection close\n";
-            static::$swooleClientInstance = null;
-            static::$swooleClientConnected = false;
-        });
         $async_config = $this->engine->getConfigVar('async');
         if (!$client->connect($async_config['async']['server']['host'], $async_config['async']['server']['port'])) {
             static::$swooleClientConnected = false;
             return null;
         }
-        $client->timer = swoole_timer_after(1000, function () use ($client) {
-            echo "socket timeout\n";
-            $client->close();
-            static::$swooleClientConnected = false;
-            $client = null;
-        });
         static::$swooleClientConnected = true;
         return $client;
     }
@@ -176,7 +154,7 @@ class ErrorHandler
                 [$err_msg, $traces, $source],
                 $error_config['mail_tpl']);
         }
-        $json_data = json_encode(['cmd' => 'email.send', 'subject' => $subject, 'content' => $content]);
+        $json_data = json_encode([ 'to'=>$error_config['email_notify'],'config'=>$this->engine->getConfigVar('email'), 'cmd' => 'email.send', 'subject' => $subject, 'content' => $content]);
 
         $swoole_client = $this->getSwooleClientInstance();
         if (static::$swooleClientConnected && !empty($swoole_client)) {
