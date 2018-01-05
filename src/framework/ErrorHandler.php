@@ -69,19 +69,18 @@ class ErrorHandler
             $err = 'CAUGHT EXCEPTION';
         }
 
-        $err_msg = "$err: $errstr in $errfile on line $errline";
+        $errMsg = "$err: $errstr in $errfile on line $errline";
 
         // 写入日志操作
-        $error_config = $this->engine->getConfigVar('error');
-        if (empty($error_config)) {
+        if (empty($errorConfig)) {
             return false;
         }
-        if (isset($error_config['enable_write_log']) && $error_config['enable_write_log']) {
-            $this->engine->logErr($err_msg);
+        if (isset($errorConfig['enable_write_log']) && $errorConfig['enable_write_log']) {
+            $this->engine->logErr($errMsg);
         }
 
         // 是否启用发送错误邮件
-        if (!isset($error_config['enable_send_email']) || !$error_config['enable_send_email']) {
+        if (!isset($errorConfig['enable_send_email']) || !$errorConfig['enable_send_email']) {
             return false;
         }
 
@@ -91,11 +90,11 @@ class ErrorHandler
         if (!isset($server_status_config['swoole']) || !$server_status_config['swoole']) {
             return false;
         }
-        $reqData = substr(var_export($_GET, true),0, 1000)."\n<br>".substr(var_export($_POST, true),0, 10000);
+        $reqData = substr(var_export($_GET, true), 0, 1000) . "\n<br>" . substr(var_export($_POST, true), 0, 10000);
         // 限制最大行数50行,防止获取代码
-        $max_source_line = min(50, max(10, intval($error_config['max_source_line'])));
+        $max_source_line = min(50, max(10, intval($errorConfig['max_source_line'])));
         $source = $this->readSource($errfile, $errline, $max_source_line);
-        $this->sendMailAsync($err_msg, $reqData, $source);
+        $this->sendMailAsync($errMsg, $reqData, $source);
 
         return true;
     }
@@ -103,7 +102,7 @@ class ErrorHandler
 
     /**
      * 创建一个swoole client 单例对象
-     * @return  swoole client
+     * @return  \swoole client
      */
     public function getSwooleClientInstance()
     {
@@ -117,7 +116,7 @@ class ErrorHandler
 
     /**
      * 创建连接到swoole 服务器的客户端实例
-     * @return swoole_client| null
+     * @return \swoole_client| null
      */
     private function createSwooleClient()
     {
@@ -125,11 +124,12 @@ class ErrorHandler
             return null;
         }
 
-        $client = new \swoole_client(SWOOLE_SOCK_TCP); //异步非阻塞
-        $client->set(array(
-            'package_max_length'    => 2000000,  //协议最大长度
-            'socket_buffer_size'     => 1024*1024*2, //2M缓存区
-        ));
+        $client = new \swoole_client(SWOOLE_SOCK_TCP);
+        $option = [
+            'package_max_length' => 2000000,
+            'socket_buffer_size' => 1024 * 1024 * 2,
+        ];
+        $client->set($option);
         $async_config = $this->engine->getConfigVar('async');
         if (!$client->connect($async_config['async']['server']['host'], $async_config['async']['server']['port'])) {
             static::$swooleClientConnected = false;
@@ -143,23 +143,24 @@ class ErrorHandler
 
     /**
      * 异步的发送数据给swoole server,swoole server再交给 worker 执行
-     * @param $err_msg
-     * @param $reqData
-     * @param $source
+     * @param string $err_msg
+     * @param string $reqData
+     * @param string $source
      */
     private function sendMailAsync($err_msg, $reqData, $source)
     {
-        $error_config = $this->engine->getConfigVar('error');
+        $errorConfig = $this->engine->getConfigVar('error');
 
         $subject = substr($err_msg, 0, 20);
         $content = $err_msg;
-        if (isset($error_config['mail_tpl'])) {
+        if (isset($errorConfig['mail_tpl'])) {
             $content = str_replace(
                 ['{{err_msg}}', '{{req_data}}', '{{source}}'],
                 [$err_msg, $reqData, $source],
-                $error_config['mail_tpl']);
+                $errorConfig['mail_tpl']
+            );
         }
-        $json_data = json_encode([ 'to'=>$error_config['email_notify'],'config'=>$this->engine->getConfigVar('email'), 'cmd' => 'email.send_by_api', 'subject' => $subject, 'content' => $content]);
+        $json_data = json_encode(['to' => $errorConfig['email_notify'], 'config' => $this->engine->getConfigVar('email'), 'cmd' => 'email.send_by_api', 'subject' => $subject, 'content' => $content]);
 
         $swoole_client = $this->getSwooleClientInstance();
         if (static::$swooleClientConnected && !empty($swoole_client)) {
@@ -167,10 +168,20 @@ class ErrorHandler
         }
     }
 
+    /**
+     * 获取错误的代码
+     * @param string $file 文件路径
+     * @param int $line 所在行数
+     * @param int $max_source_line 获取最大行数
+     * @return string
+     */
     private function readSource($file, $line, $max_source_line)
     {
         $i = 0;
         $handle = fopen($file, "rb");
+        if (!$handle) {
+            return '';
+        }
         $source = "<?php \n";
         $start_line = max(0, $line - intval($max_source_line / 2));
         $end_line = max($line, $line + intval($max_source_line / 2));

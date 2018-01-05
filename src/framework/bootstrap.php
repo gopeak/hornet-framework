@@ -6,6 +6,8 @@ if (!defined('FRAMEWORK_ROOT_PATH')) {
 
 require_once FRAMEWORK_ROOT_PATH . '/function.php';
 require_once FRAMEWORK_ROOT_PATH . '/FilterSqlInject.php';
+require_once FRAMEWORK_ROOT_PATH . '/HornetCoreException.php';
+require_once FRAMEWORK_ROOT_PATH . '/HornetLogicException.php';
 require_once FRAMEWORK_ROOT_PATH . '/ErrorHandler.php';
 require_once FRAMEWORK_ROOT_PATH . '/HornetEngine.php';
 require_once FRAMEWORK_ROOT_PATH . '/protocol/Iprotocol.php';
