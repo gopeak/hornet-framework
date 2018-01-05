@@ -72,6 +72,7 @@ class ErrorHandler
         $errMsg = "$err: $errstr in $errfile on line $errline";
 
         // 写入日志操作
+        $errorConfig = $this->engine->getConfigVar('error');
         if (empty($errorConfig)) {
             return false;
         }
