@@ -33,6 +33,13 @@ class ErrorHandler
     protected static $swooleClientInstance;
 
     /**
+     * mysql client 单例
+     * @var self
+     */
+    protected static $mysqlClientInstance;
+
+
+    /**
      * swoole client 是否已经连接
      * @var bool
      */
@@ -84,7 +91,9 @@ class ErrorHandler
         if (!isset($errorConfig['enable_send_email']) || !$errorConfig['enable_send_email']) {
             return false;
         }
-
+        if (!$this->log2Db($errfile, $errline, $err, $errstr)) {
+            return false;
+        }
         // 判断服务状态是否可用
         $server_status_config = $this->engine->getConfigVar('server_status');
         // 如果异步服务器swoole不可用则写入文件
@@ -100,24 +109,80 @@ class ErrorHandler
         return true;
     }
 
+    private function log2Db($errfile, $errline, $err, $errstr)
+    {
+        $pdo = self::getMysqlClientInstance();
+        $date = date('Y-m-d');
+        $md5 = md5($errfile . $errline . $date);
+        $time = time();
+        $sql = "Insert  into  `log_runtime_error` Set  `md5`=:md5,`file`=:file,`line`=:line,`time`=:time,`date`=:date,`err`=:err,`errstr`=:errstr";
+        $sth = $pdo->prepare($sql);
+        $sth->bindParam(':md5', $md5, \PDO::PARAM_STR);
+        $sth->bindParam(':file', $errfile, \PDO::PARAM_STR);
+        $sth->bindParam(':line', $errline, \PDO::PARAM_INT);
+        $sth->bindParam(':time', $time, \PDO::PARAM_INT);
+        $sth->bindParam(':date', $date, \PDO::PARAM_STR);
+        $sth->bindParam(':err', $err, \PDO::PARAM_STR);
+        $sth->bindParam(':errstr', $errstr, \PDO::PARAM_STR);
+        $ret = $sth->execute();
+        //var_dump($ret);
+        return $ret;
+    }
 
     /**
-     * 创建一个swoole client 单例对象
+     * 创建一个 Swoole client 单例对象
      * @return  \swoole client
      */
     public function getSwooleClientInstance()
     {
-
         if (!isset(static::$swooleClientInstance) || !is_object(static::$swooleClientInstance)) {
-
             static::$swooleClientInstance = $this->createSwooleClient();
         }
         return static::$swooleClientInstance;
     }
 
     /**
-     * 创建连接到swoole 服务器的客户端实例
-     * @return \swoole_client| null
+     * 创建一个 Mysql client 单例对象
+     * @return object
+     */
+    public function getMysqlClientInstance()
+    {
+        if (!isset(static::$mysqlClientInstance) || !is_object(static::$mysqlClientInstance)) {
+            static::$mysqlClientInstance = $this->createMysqlClientInstance();
+        }
+        return static::$mysqlClientInstance;
+    }
+
+    /**
+     * 创建PDO实例
+     * @return \PDO
+     */
+    public function createMysqlClientInstance()
+    {
+        $dbConfig = $this->engine->getConfigVar('database')['database']['log_db'];
+        $names = (isset($dbConfig['charset']) && !empty($dbConfig['charset'])) ? $dbConfig['charset'] : 'utf8';
+        $dsn = sprintf("%s:host=%s;port=%s;dbname=%s", $dbConfig['driver'], $dbConfig['host'], $dbConfig['port'], $dbConfig['db_name']);
+        $params = [
+            \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$names}",
+            \PDO::ATTR_PERSISTENT => false,
+            \PDO::ATTR_TIMEOUT => isset($dbConfig['timeout']) ? $dbConfig['timeout'] : 10
+        ];
+        try {
+            $pdo = @new \PDO($dsn, $dbConfig['user'], $dbConfig['password'], $params);
+        } catch (\PDOException $e) {
+            $errMsg = 'database log_db config connect failed: ' . $e->getMessage();
+            $this->engine->logErr($errMsg);
+            return null;
+        }
+        if (!$pdo) {
+            return null;
+        }
+        return $pdo;
+    }
+
+    /**
+     * 创建连接到 Swoole 服务器的客户端实例
+     * @return \swoole_client | null
      */
     private function createSwooleClient()
     {
