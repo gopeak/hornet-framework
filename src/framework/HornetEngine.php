@@ -886,39 +886,49 @@ class HornetEngine
         if (!$this->enableXhprof) {
             return;
         }
+		
 
-        if (mt_rand(1, 100) < $this->xhprofRate) {
+        if (mt_rand(1, 1000) < $this->xhprofRate) {
             if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'xhprof') !== false) {
                 return;
-            }
-            // start profiling
-            xhprof_enable(XHPROF_FLAGS_MEMORY, array(
-                'ignored_functions' => array(
-                    'call_user_func',
-                    'call_user_func_array'
-                )
-            ));
-
+            }  
+ 		
             $xhprofRoot = $this->xhprofRoot;
             if ($this->cmd) {
                 $name = $this->cmd;
             } else {
                 $name = $this->ctrl . '.' . $this->action;
             }
+			
             $name = str_replace('.', '_', $name);
-            $outputDir = $this->xhprofSavePath;
-            if (file_exists($xhprofRoot . "xhprof_lib/utils/xhprof_lib.php")) {
-                $saveXhprof = create_function('$xhprof_root,$name,$outputDir', '$xhprof_data = xhprof_disable();
-                                                                ini_set("xhprof.output_dir",$outputDir);
-                                                                include_once $xhprofRoot . "xhprof_lib/utils/xhprof_lib.php";
-                                                                include_once $xhprofRoot . "xhprof_lib/utils/xhprof_runs.php";
-                                                                $xhprof_runs = new \XHProfRuns_Default();
-                                                                $run_id = $xhprof_runs->save_run($xhprof_data, $name);  
-        
-            ');
-                register_shutdown_function($saveXhprof, $xhprofRoot, $name, $outputDir);
-            }
+            $outputDir = $this->xhprofSavePath;    
+			
+			// start profiling
+            xhprof_enable( XHPROF_FLAGS_NO_BUILTINS | XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY ); 
+			// 业务逻辑执行中...
+            register_shutdown_function(array(&$this, 'saveXhprof'), $xhprofRoot, $name, $outputDir);
+         
         }
+    }
+	
+	public function saveXhprof($xhprofRoot, $name, $outputDir)
+    {
+         
+		$xhprof_data = xhprof_disable();
+		if (!file_exists($xhprofRoot . "xhprof_lib/utils/xhprof_lib.php")) { 
+			return false;
+		}
+		$child_dir = date('Y-m-d').'/'.date('H');
+		if( !file_exists($outputDir.$child_dir) ){
+			@mkdir( $outputDir.$child_dir ,0755, true );
+		}
+		ini_set("xhprof.output_dir",$outputDir.$child_dir); 
+		include_once $xhprofRoot . "/xhprof_lib/utils/xhprof_lib.php";
+		include_once $xhprofRoot . "/xhprof_lib/utils/xhprof_runs.php";
+		$xhprof_runs = new \XHProfRuns_Default($outputDir.$child_dir);
+		$run_id = $xhprof_runs->save_run($xhprof_data, $name);
+		return true;
+
     }
 
     /**
