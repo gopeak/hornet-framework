@@ -47,7 +47,7 @@ class Ajax implements Iprotocol
      */
     public function builder($ret, $data, $msg = '', $format = 'json')
     {
-        header('Content-type: application/json; charset=utf-8');
+        @header('Content-type: application/json; charset=utf-8');
         $this->ret  = strval($ret);
         $this->time = time();
         $this->msg  = $msg;
