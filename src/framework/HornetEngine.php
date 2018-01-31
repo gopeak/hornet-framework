@@ -138,6 +138,13 @@ class HornetEngine
     public $xhprofRoot = '';
 
     /**
+     * Xhprof 日志文件
+     *
+     * @var string
+     */
+    public $xhprofRunId = '';
+
+    /**
      * 是否启用访问路由检查,如果启用,只有在 condig/{$app_status}/map.cfg.php 定义的路由才允许访问
      *
      * @var bool
@@ -251,11 +258,11 @@ class HornetEngine
             $this->format = es(trimStr($_REQUEST['format']));
         }
 
-        if($this->enableXssFilter){
-            $_GET     && SafeFilter($_GET);
-            $_POST    && SafeFilter($_POST);
-            $_POST    && SafeFilter($_REQUEST);
-            $_COOKIE  && SafeFilter($_COOKIE);
+        if ($this->enableXssFilter) {
+            $_GET && SafeFilter($_GET);
+            $_POST && SafeFilter($_POST);
+            $_POST && SafeFilter($_REQUEST);
+            $_COOKIE && SafeFilter($_COOKIE);
         }
 
         // custom error handler
@@ -284,12 +291,12 @@ class HornetEngine
      *
      * @return mixed
      */
-    public function getProperty( $name )
+    public function getProperty($name)
     {
-        if( isset( $this->$name ) ){
+        if (isset($this->$name)) {
             return $this->$name;
         }
-        if( isset( static::$name ) ){
+        if (isset(static::$name)) {
             return static::$name;
         }
         return null;
@@ -763,10 +770,10 @@ class HornetEngine
     /**
      * 检验返回值
      *
-     * @param \ReflectionMethod $reflectMethod  反射方法
-     * @param protocol\Api $apiProtocol         protocol object
-     * @param object $returnObj                 Object
-     * @param string $jsonStr                   Match Json string
+     * @param \ReflectionMethod $reflectMethod 反射方法
+     * @param protocol\Api $apiProtocol protocol object
+     * @param object $returnObj Object
+     * @param string $jsonStr Match Json string
      *
      * @return void
      */
@@ -813,7 +820,7 @@ class HornetEngine
                     return [false, 'property:' . $k . ' not exist'];
                 }
                 if (gettype($v) != gettype($returnObj->$k)) {
-                    return [false, 'expect ' . $k . ' type is ' . gettype($v) . ', but get '.gettype($returnObj->$k)];
+                    return [false, 'expect ' . $k . ' type is ' . gettype($v) . ', but get ' . gettype($returnObj->$k)];
                 }
                 if (!empty($returnObj->$k) && (is_array($returnObj->$k) || is_object($returnObj->$k))) {
                     list($ret, $msg) = $this->compareReturnJson($v, $returnObj->$k);
@@ -886,48 +893,48 @@ class HornetEngine
         if (!$this->enableXhprof) {
             return;
         }
-		
+
 
         if (mt_rand(1, 1000) < $this->xhprofRate) {
             if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'xhprof') !== false) {
                 return;
-            }  
- 		
+            }
+
             $xhprofRoot = $this->xhprofRoot;
             if ($this->cmd) {
                 $name = $this->cmd;
             } else {
                 $name = $this->ctrl . '.' . $this->action;
             }
-			
+
             $name = str_replace('.', '_', $name);
-            $outputDir = $this->xhprofSavePath;    
-			
-			// start profiling
-            xhprof_enable( XHPROF_FLAGS_NO_BUILTINS | XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY ); 
-			// 业务逻辑执行中...
+            $outputDir = $this->xhprofSavePath;
+
+            // start profiling
+            xhprof_enable(XHPROF_FLAGS_NO_BUILTINS | XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
+            // 业务逻辑执行中...
             register_shutdown_function(array(&$this, 'saveXhprof'), $xhprofRoot, $name, $outputDir);
-         
+
         }
     }
-	
-	public function saveXhprof($xhprofRoot, $name, $outputDir)
+
+    public function saveXhprof($xhprofRoot, $name, $outputDir)
     {
-         
-		$xhprof_data = xhprof_disable();
-		if (!file_exists($xhprofRoot . "xhprof_lib/utils/xhprof_lib.php")) { 
-			return false;
-		}
-		$child_dir = date('Y-m-d').'/'.date('H');
-		if( !file_exists($outputDir.$child_dir) ){
-			@mkdir( $outputDir.$child_dir ,0755, true );
-		}
-		ini_set("xhprof.output_dir",$outputDir.$child_dir); 
-		include_once $xhprofRoot . "/xhprof_lib/utils/xhprof_lib.php";
-		include_once $xhprofRoot . "/xhprof_lib/utils/xhprof_runs.php";
-		$xhprof_runs = new \XHProfRuns_Default($outputDir.$child_dir);
-		$run_id = $xhprof_runs->save_run($xhprof_data, $name);
-		return true;
+
+        $xhprof_data = xhprof_disable();
+        if (!file_exists($xhprofRoot . "xhprof_lib/utils/xhprof_lib.php")) {
+            return false;
+        }
+        $child_dir = date('Y-m-d') . '/' . date('H');
+        if (!file_exists($outputDir . $child_dir)) {
+            @mkdir($outputDir . $child_dir, 0755, true);
+        }
+        ini_set("xhprof.output_dir", $outputDir . $child_dir);
+        include_once $xhprofRoot . "/xhprof_lib/utils/xhprof_lib.php";
+        include_once $xhprofRoot . "/xhprof_lib/utils/xhprof_runs.php";
+        $xhprof_runs = new \XHProfRuns_Default($outputDir . $child_dir);
+        $this->xhprofRunId = $xhprof_runs->save_run($xhprof_data, $name);
+        return true;
 
     }
 
