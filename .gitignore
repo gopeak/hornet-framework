@@ -6,4 +6,3 @@
 /vendor
 /test/vendor
 /test/composer.lock
-test/app/public/dev/
