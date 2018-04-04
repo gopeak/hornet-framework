@@ -88,6 +88,22 @@ class HornetEngine
      */
     private $sessionStarted = false;
 
+
+
+    /**
+     * 自定义重写URL的类
+     *
+     * @var string
+     */
+    public $customRewriteClass = '';
+
+    /**
+     * 自定义重写URL的函数
+     *
+     * @var string
+     */
+    public $customRewriteFunction = '';
+
     /**
      * 当前的项目目录名称,如app site
      *
@@ -549,6 +565,8 @@ class HornetEngine
                 $filterSqlInject = new FilterSqlInject($this->storagePath . '/log/sql_inject/');
                 $filterSqlInject->filterInput();
             }
+            $this->customRewrite();
+
             $ctrlArr = explode('.', $this->ctrl);
             $ctrl = is_array($ctrlArr) ? end($ctrlArr) : $this->ctrl;
             unset($ctrlArr);
@@ -617,6 +635,40 @@ class HornetEngine
         }
     }
 
+    private function customRewrite()
+    {
+        $getRetFunc = function($callRet){
+            if(count($callRet)==2){
+                $this->ctrl = $callRet[0];
+                $this->method = $callRet[1];
+            }
+            if(count($callRet)==3){
+                $this->ctrl = $callRet[0];
+                $this->mod = $callRet[1];
+                $this->method = $callRet[2];
+            }
+        };
+        if(empty($this->customRewriteClass) && !empty($this->customRewriteFunction)){
+            $fnc = $this->customRewriteFunction;
+            if(!function_exists($fnc)) {
+                return false;
+            }
+            $callRet = $fnc($this);
+            $getRetFunc($callRet);
+        }
+        if(!empty($this->customRewriteClass) && !empty($this->customRewriteFunction)){
+            if(!class_exists($this->customRewriteClass)){
+                return false;
+            }
+            $classObj = new $this->customRewriteClass();
+            $fnc = $this->customRewriteFunction;
+            if(!method_exists($classObj,$fnc)) {
+                return false;
+            }
+            $callRet = $classObj->$fnc($this);
+            $getRetFunc($callRet);
+        }
+    }
     /**
      * Underline to uppercase
      *
