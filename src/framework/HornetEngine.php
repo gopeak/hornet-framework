@@ -385,7 +385,7 @@ class HornetEngine
 
     /**
      * 开发框架 路由分发，动态调用方法以及构建返回
-     *
+     * @throws \Exception
      * @return void
      */
     public function route()
@@ -522,8 +522,13 @@ class HornetEngine
             }
             echo $jsonStr;
             if (($this->appStatus == 'development' || $this->appStatus == 'test') && $this->enableWriteReqLog) {
-                $reqLogPath = $this->appPath . 'tmp/' . date('Y-m-d') . 'response.log';
-                $logContent = date('H:i:s') . ': ' . var_export($result, true) . "\n\n";
+                $reqLogPath = $this->storagePath . 'tmp/' . date('Y-m-d') . '_request.log';
+                $datetime = date('H:i:s');
+                $getStr     = var_export($_GET, true);
+                $postStr    = var_export($_POST, true);
+                $cookieStr  = var_export($_COOKIE, true);
+                $logContent = $datetime . ': ' . $getStr . $postStr . $cookieStr . "\n\n";
+                unset($datetime, $getStr, $postStr, $cookieStr);
                 f($reqLogPath, $logContent, FILE_APPEND);
             }
             closeResources();
@@ -597,7 +602,6 @@ class HornetEngine
 
             // 是否启用安全映射机制
             $this->securityMapCheck('ctrl', $ctrl, $method);
-
 
             // 通过反射获取调用方法的参数列表
             if ($this->enableReflectMethod) {
@@ -759,7 +763,11 @@ class HornetEngine
         }
 
         if ($this->enableErrorLog) {
-            $errMsg = $this->cmd . ' ' . $e->getCode() . ':' . $e->getMessage() . ",trace:\n" . print_r(debug_backtrace(false, 3), true) . "\n\n";
+            $cmd = $this->cmd;
+            $code = $e->getCode();
+            $msg = $e->getMessage();
+            $trace = print_r(debug_backtrace(false, 3), true);
+            $errMsg = $cmd. ' ' . $code() . ':' . $msg . ",trace:\n" . $trace. "\n\n";
             $this->logExceptionErr($errMsg);
         }
     }
@@ -800,7 +808,11 @@ class HornetEngine
             return;
         }
         if ($this->enableErrorLog) {
-            $errMsg = $this->cmd . ' ' . $this->ctrl . '->' . $this->method . ' ' . $e->getCode() . ':' . $e->getMessage() . ",trace:\n" . print_r(debug_backtrace(false, 3), true) . "\n\n";
+            $cmd = $this->cmd;
+            $code = $e->getCode();
+            $msg = $e->getMessage();
+            $trace = print_r(debug_backtrace(false, 3), true);
+            $errMsg = $cmd. ' ' . $code() . ':' . $msg . ",trace:\n" . $trace. "\n\n";
             $this->logExceptionErr($errMsg);
         }
     }
@@ -940,39 +952,30 @@ class HornetEngine
         if (!extension_loaded('xhprof')) {
             return;
         }
-
         // 判断是否开启
         if (!$this->enableXhprof) {
             return;
         }
-
-
         if (mt_rand(1, 1000) < $this->xhprofRate) {
             if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'xhprof') !== false) {
                 return;
             }
-
             $xhprofRoot = $this->xhprofRoot;
             if ($this->cmd) {
                 $name = $this->cmd;
             } else {
                 $name = $this->ctrl . '.' . $this->action;
             }
-
             $name = str_replace('.', '_', $name);
             $outputDir = $this->xhprofSavePath;
-
             // start profiling
             xhprof_enable(XHPROF_FLAGS_NO_BUILTINS | XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
             // 业务逻辑执行中...
             register_shutdown_function(array(&$this, 'saveXhprof'), $xhprofRoot, $name, $outputDir);
-
         }
     }
-
     public function saveXhprof($xhprofRoot, $name, $outputDir)
     {
-
         $xhprof_data = xhprof_disable();
         if (!file_exists($xhprofRoot . "xhprof_lib/utils/xhprof_lib.php")) {
             return false;
@@ -987,7 +990,6 @@ class HornetEngine
         $xhprof_runs = new \XHProfRuns_Default($outputDir . $child_dir);
         $this->xhprofRunId = $xhprof_runs->save_run($xhprof_data, $name);
         return true;
-
     }
 
     /**
