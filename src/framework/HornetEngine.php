@@ -642,6 +642,9 @@ class HornetEngine
     private function customRewrite()
     {
         $getRetFunc = function($callRet){
+            if (!is_array($callRet)){
+                return;
+            }
             if(count($callRet)==2){
                 $this->ctrl = $callRet[0];
                 $this->method = $callRet[1];
