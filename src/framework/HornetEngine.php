@@ -770,7 +770,7 @@ class HornetEngine
             $code = $e->getCode();
             $msg = $e->getMessage();
             $trace = print_r(debug_backtrace(false, 3), true);
-            $errMsg = $cmd. ' ' . $code() . ':' . $msg . ",trace:\n" . $trace. "\n\n";
+            $errMsg = $cmd. ' ' . $code. ':' . $msg . ",trace:\n" . $trace. "\n\n";
             $this->logExceptionErr($errMsg);
         }
     }
