@@ -12,7 +12,7 @@
 <p align="center">
 	<a href="https://github.com/gopeak/hornet-framework/archive/master.zip">下载</a> ·
 	<a href="https://github.com/gopeak/hornet-framework/wiki">文档</a> ·
-	<a href="#">社区</a>
+	<a href="https://github.com/gopeak/hornet-framework/issues">Issues</a>
 </p>
 
 Hornet-framework 具有高性能,轻量级,易于上手,功能完备的PHP LMVC 开发框架.
