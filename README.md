@@ -40,7 +40,7 @@ LMVC分别是 Logic逻辑 Model模型 View视图 Ctrl控制器，与传统的MVC
 - **自动回收资源**  
 
 ## LMVC开发模式
-![lvmc](wx.888zb.com/other/lvmc.jpg)
+![lvmc](http://wx.888zb.com/other/lvmc.jpg)
 
 ## 待完成功能
 - **松耦合的设计**   
