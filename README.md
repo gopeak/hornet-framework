@@ -10,8 +10,8 @@
 	   
 </p>
 <p align="center">
-	<a href="http://192.168.3.213/ismond/xphp/repository/archive.zip?ref=master">下载</a> ·
-	<a href="http://192.168.3.213/ismond/xphp/wikis/home">文档</a> ·
+	<a href="https://github.com/gopeak/hornet-framework/archive/master.zip">下载</a> ·
+	<a href="https://github.com/gopeak/hornet-framework/wiki">文档</a> ·
 	<a href="#">社区</a>
 </p>
 
