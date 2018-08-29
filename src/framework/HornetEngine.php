@@ -594,8 +594,11 @@ class HornetEngine
 
             $ctrlObj = new $ctrlClass();
             $method = $this->method;
-
-            if (isset($this->ctrlMethodPrefix) && !isAjaxReq()) {
+            $dataType = 'html';
+            if (isset($_GET['data_type'])) {
+                $dataType = $_GET['data_type'];
+            }
+            if (isset($this->ctrlMethodPrefix) && !isAjaxReq() && $dataType=='html') {
                 $method = $this->ctrlMethodPrefix . ucfirst($method);
             }
             //var_dump($method);die;
