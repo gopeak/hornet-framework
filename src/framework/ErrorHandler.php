@@ -115,7 +115,8 @@ class ErrorHandler
         $date = date('Y-m-d');
         $md5 = md5($errfile . $errline . $date);
         $time = time();
-        $sql = "Insert  into  `log_runtime_error` Set  `md5`=:md5,`file`=:file,`line`=:line,`time`=:time,`date`=:date,`err`=:err,`errstr`=:errstr";
+        $sql = "Insert  into  `log_runtime_error` 
+                Set  `md5`=:md5,`file`=:file,`line`=:line,`time`=:time,`date`=:date,`err`=:err,`errstr`=:errstr";
         $sth = $pdo->prepare($sql);
         $sth->bindParam(':md5', $md5, \PDO::PARAM_STR);
         $sth->bindParam(':file', $errfile, \PDO::PARAM_STR);
@@ -161,7 +162,9 @@ class ErrorHandler
     {
         $dbConfig = $this->engine->getConfigVar('database')['database']['log_db'];
         $names = (isset($dbConfig['charset']) && !empty($dbConfig['charset'])) ? $dbConfig['charset'] : 'utf8';
-        $dsn = sprintf("%s:host=%s;port=%s;dbname=%s", $dbConfig['driver'], $dbConfig['host'], $dbConfig['port'], $dbConfig['db_name']);
+        $dsn = sprintf(
+            "%s:host=%s;port=%s;dbname=%s",
+            $dbConfig['driver'], $dbConfig['host'], $dbConfig['port'], $dbConfig['db_name']);
         $params = [
             \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$names}",
             \PDO::ATTR_PERSISTENT => false,
@@ -226,7 +229,13 @@ class ErrorHandler
                 $errorConfig['mail_tpl']
             );
         }
-        $json_data = json_encode(['to' => $errorConfig['email_notify'], 'config' => $this->engine->getConfigVar('email'), 'cmd' => 'email.send_by_api', 'subject' => $subject, 'content' => $content]);
+        $json_data = json_encode([
+            'to' => $errorConfig['email_notify'],
+            'config' => $this->engine->getConfigVar('email'),
+            'cmd' => 'email.send_by_api',
+            'subject' => $subject, 'content' => $content
+            ]
+        );
 
         $swoole_client = $this->getSwooleClientInstance();
         if (static::$swooleClientConnected && !empty($swoole_client)) {

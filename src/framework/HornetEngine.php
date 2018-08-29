@@ -89,7 +89,6 @@ class HornetEngine
     private $sessionStarted = false;
 
 
-
     /**
      * 自定义重写URL的类
      *
@@ -110,6 +109,12 @@ class HornetEngine
      * @var string
      */
     public $currentApp = 'app';
+
+    /**
+     * 控制器方法前缀
+     * @var string
+     */
+    public $ctrlMethodPrefix = '';
 
     /**
      * 在api调用时是否返回调用堆栈
@@ -524,9 +529,9 @@ class HornetEngine
             if (($this->appStatus == 'development' || $this->appStatus == 'test') && $this->enableWriteReqLog) {
                 $reqLogPath = $this->storagePath . 'tmp/' . date('Y-m-d') . '_request.log';
                 $datetime = date('H:i:s');
-                $getStr     = var_export($_GET, true);
-                $postStr    = var_export($_POST, true);
-                $cookieStr  = var_export($_COOKIE, true);
+                $getStr = var_export($_GET, true);
+                $postStr = var_export($_POST, true);
+                $cookieStr = var_export($_COOKIE, true);
                 $logContent = $datetime . ': ' . $getStr . $postStr . $cookieStr . "\n\n";
                 unset($datetime, $getStr, $postStr, $cookieStr);
                 f($reqLogPath, $logContent, FILE_APPEND);
@@ -589,6 +594,11 @@ class HornetEngine
 
             $ctrlObj = new $ctrlClass();
             $method = $this->method;
+
+            if (isset($this->ctrlMethodPrefix) && !isAjaxReq()) {
+                $method = $this->ctrlMethodPrefix . ucfirst($method);
+            }
+            //var_dump($method);die;
             unset($ctrlClass);
 
             // 检查对象方法是否存在
@@ -641,41 +651,42 @@ class HornetEngine
 
     private function customRewrite()
     {
-        $getRetFunc = function($callRet){
-            if (!is_array($callRet)){
+        $getRetFunc = function ($callRet) {
+            if (!is_array($callRet)) {
                 return;
             }
-            if(count($callRet)==2){
+            if (count($callRet) == 2) {
                 $this->ctrl = $callRet[0];
                 $this->method = $callRet[1];
             }
-            if(count($callRet)==3){
+            if (count($callRet) == 3) {
                 $this->ctrl = $callRet[0];
                 $this->mod = $callRet[1];
                 $this->method = $callRet[2];
             }
         };
-        if(empty($this->customRewriteClass) && !empty($this->customRewriteFunction)){
+        if (empty($this->customRewriteClass) && !empty($this->customRewriteFunction)) {
             $fnc = $this->customRewriteFunction;
-            if(!function_exists($fnc)) {
+            if (!function_exists($fnc)) {
                 return false;
             }
             $callRet = $fnc($this);
             $getRetFunc($callRet);
         }
-        if(!empty($this->customRewriteClass) && !empty($this->customRewriteFunction)){
-            if(!class_exists($this->customRewriteClass)){
+        if (!empty($this->customRewriteClass) && !empty($this->customRewriteFunction)) {
+            if (!class_exists($this->customRewriteClass)) {
                 return false;
             }
             $classObj = new $this->customRewriteClass();
             $fnc = $this->customRewriteFunction;
-            if(!method_exists($classObj,$fnc)) {
+            if (!method_exists($classObj, $fnc)) {
                 return false;
             }
             $callRet = $classObj->$fnc($this);
             $getRetFunc($callRet);
         }
     }
+
     /**
      * Underline to uppercase
      *
@@ -770,7 +781,7 @@ class HornetEngine
             $code = $e->getCode();
             $msg = $e->getMessage();
             $trace = print_r(debug_backtrace(false, 3), true);
-            $errMsg = $cmd. ' ' . $code. ':' . $msg . ",trace:\n" . $trace. "\n\n";
+            $errMsg = $cmd . ' ' . $code . ':' . $msg . ",trace:\n" . $trace . "\n\n";
             $this->logExceptionErr($errMsg);
         }
     }
@@ -815,7 +826,7 @@ class HornetEngine
             $code = $e->getCode();
             $msg = $e->getMessage();
             $trace = print_r(debug_backtrace(false, 3), true);
-            $errMsg = $cmd. ' ' . $code. ':' . $msg . ",trace:\n" . $trace. "\n\n";
+            $errMsg = $cmd . ' ' . $code . ':' . $msg . ",trace:\n" . $trace . "\n\n";
             $this->logExceptionErr($errMsg);
         }
     }
@@ -977,6 +988,7 @@ class HornetEngine
             register_shutdown_function(array(&$this, 'saveXhprof'), $xhprofRoot, $name, $outputDir);
         }
     }
+
     public function saveXhprof($xhprofRoot, $name, $outputDir)
     {
         $xhprof_data = xhprof_disable();
