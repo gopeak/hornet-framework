@@ -490,8 +490,13 @@ class HornetEngine
 
             if (($this->appStatus == 'development' || $this->appStatus == 'test') && $this->enableWriteReqLog) {
                 $reqLogPath = $this->storagePath . 'tmp/' . date('Y-m-d') . '_request.log';
-                $logContent = date('H:i:s') . ': ' . var_export($_GET, true) . var_export($_POST, true) . var_export($_COOKIE, true) . "\n\n";
+                $dateTime = date('H:i:s');
+                $getStr = var_export($_GET, true);
+                $postStr = var_export($_POST, true);
+                $cookieStr = var_export($_COOKIE, true);
+                $logContent = $dateTime . ': ' . $getStr . $postStr . $cookieStr . "\n\n";
                 f($reqLogPath, $logContent, FILE_APPEND);
+                unset($dateTime, $getStr, $postStr, $cookieStr, $logContent);
             }
             $reflectMethod = null;
             // 通过反射获取调用方法的参数列表
@@ -598,16 +603,18 @@ class HornetEngine
             if (isset($_GET['data_type'])) {
                 $dataType = $_GET['data_type'];
             }
-            if (isset($this->ctrlMethodPrefix) && !isAjaxReq() && $dataType=='html') {
-                $method = $this->ctrlMethodPrefix . ucfirst($method);
-            }
+
             //var_dump($method);die;
             unset($ctrlClass);
 
             // 检查对象方法是否存在
             if (!method_exists($ctrlObj, $method)) {
                 $method = $this->underlineToUppercase($method);
-
+                if (!method_exists($ctrlObj, $method)) {
+                    if (isset($this->ctrlMethodPrefix)) {
+                        $method = $this->ctrlMethodPrefix . ucfirst($method);
+                    }
+                }
                 if (!method_exists($ctrlObj, $method)) {
                     throw new \Exception($this->ctrl . '->' . $method . ' no found;', 404);
                 }
