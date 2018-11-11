@@ -72,7 +72,7 @@ class Api implements Iprotocol
 
             if (!is_object($val)) {
                 if (is_array($val)) {
-                    $val = $this->arrToXml($val,$dom, $itemx);
+                    $val = $this->arrToXml($val, $dom, $itemx);
                 } else {
                     $text = $dom->createTextNode($val);
                     $itemx->appendChild($text);
@@ -110,7 +110,6 @@ class Api implements Iprotocol
 
     private function format($obj)
     {
-
         if ($this->retDirectStr && $this->format == 'json') {
             $debug = '{}';
             if (!empty($obj->debugs)) {
@@ -128,9 +127,18 @@ class Api implements Iprotocol
         if ($this->format == 'xml') {
             header('Content-type: application/xml; charset=utf-8');
             $arr = (array)$obj;
-            return $this->objectToXml($obj);
+            return $this->objectToXml($arr);
         }
         // json
+        // 如果trace的对象是当期实例则删除掉否则会异常
+        //if ($obj->trace[0]['object'] == $this) {
+            //echo 'this';
+        //}
+        if (isset($obj->trace[0]['object'])) {
+            unset($obj->trace[0]['object']);
+            $obj->trace[0]['object'] = new \stdClass();
+        }
+
         header('Content-type: application/json; charset=utf-8');
         return json_encode($obj);
     }
@@ -143,15 +151,15 @@ class Api implements Iprotocol
             unset($GLOBALS['__debugs']);
         }
 
-        $trace_arr = [];
+        $traceArr = [];
         if ($this->enableTrace) {
-            $trace_arr = debug_backtrace();
+            $traceArr = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 4);
         }
 
         $this->ret = strval($ret);
         $this->debug = $debug_obj;
         $this->time = time();
-        $this->trace = $trace_arr;
+        $this->trace = $traceArr;
         $this->data = $data;
         $this->format = $format;
 
