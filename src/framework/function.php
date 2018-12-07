@@ -121,7 +121,6 @@ if (!function_exists('closeResources')) {
         }
         //f(TMP_PATH.'/get_resources.log',var_export( get_resources(), true ));
     }
-
 }
 
 if (!function_exists('safeStr')) {

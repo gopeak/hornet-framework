@@ -839,6 +839,7 @@ class HornetEngine
                 $trace = print_r($_SERVER['argv'], true);
             } else {
                 $trace = print_r(debug_backtrace(false, 3), true);
+
             }
             $errMsg = $cmd . ' ' . $code . ':' . $msg . ",trace:\n" . $trace . "\n\n";
             $this->logExceptionErr($errMsg);
