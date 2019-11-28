@@ -111,6 +111,12 @@ class HornetEngine
     public $currentApp = 'app';
 
     /**
+     * 模板引擎
+     * @var string
+     */
+    public $tplEngine = 'php';
+
+    /**
      * 控制器方法前缀
      * @var string
      */
@@ -390,8 +396,8 @@ class HornetEngine
 
     /**
      * 开发框架 路由分发，动态调用方法以及构建返回
-     * @throws \Exception
      * @return void
+     * @throws \Exception
      */
     public function route()
     {
@@ -435,9 +441,9 @@ class HornetEngine
     /**
      * 处理api请求路由
      *
+     * @return void
      * @throws \Exception \PDOException logicException
      *
-     * @return void
      */
     private function routeApi()
     {
@@ -556,9 +562,9 @@ class HornetEngine
     /**
      * 处理网页的路由
      *
+     * @return void
      * @throws \Exception \PDOException logicException
      *
-     * @return void
      */
     private function routeCtrl()
     {
@@ -796,14 +802,13 @@ class HornetEngine
         }
     }
 
+
     /**
      * 处理控制器捕获到的异常
-     *
-     * @param \Exception $e Exception object
-     *
-     * @return void
+     * @param \Exception $e
+     * @throws \Exception
      */
-    private function handleCtrlException($e)
+    private function handleCtrlException(\Exception $e)
     {
         register_shutdown_function("closeResources");
 
@@ -817,15 +822,19 @@ class HornetEngine
             $ajaxProtocol->builder($e->getCode(), [], $e->getMessage());
             echo $ajaxProtocol->getResponse();
         } else {
-            $traces = [];
-            if ($this->enableTrace) {
-                $traces = var_export($e->getTrace(), true);
+            if (isset($this->tplEngine) && $this->tplEngine == 'twig') {
+                throw  $e;
+            }else{
+                $traces = [];
+                if ($this->enableTrace) {
+                    $traces = var_export($e->getTrace(), true);
+                }
+                $vars = [];
+                $vars['traces'] = $traces;
+                $vars['code'] = $e->getCode();
+                $vars['message'] = $e->getMessage();
+                $this->render($this->exceptionPage, $vars);
             }
-            $vars = [];
-            $vars['traces'] = $traces;
-            $vars['code'] = $e->getCode();
-            $vars['message'] = $e->getMessage();
-            $this->render($this->exceptionPage, $vars);
         }
         // 逻辑异常不记录日志
         if (strpos(get_class($e), 'LogicException') !== false) {
