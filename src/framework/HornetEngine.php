@@ -1039,9 +1039,10 @@ class HornetEngine
     public function getConfigVar($file)
     {
         $_config = [];
-
+        if($file=='session'){
+            $_config = $this->getCommonConfigVar($file);
+        }
         $absFile = $this->appPath . 'config/' . $this->appStatus . '/' . $file . '.cfg.php';
-
         if (file_exists($absFile)) {
             include $absFile;
         }
