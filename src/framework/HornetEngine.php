@@ -971,6 +971,9 @@ class HornetEngine
             if (!empty($sessionConfig['session.save_path'])) {
                 ini_set('session.save_path', $sessionConfig['session.save_path']);
             }
+            if (!empty($sessionConfig['session.gc_probability'])) {
+                ini_set('session.gc_probability', $sessionConfig['session.gc_probability']);
+            }
 
             if (isset($_GET['session_id']) && !empty($_GET['session_id'])) {
                 session_id($_GET['session_id']);
