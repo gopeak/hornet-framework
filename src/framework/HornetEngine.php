@@ -945,7 +945,7 @@ class HornetEngine
         if (PHP_SAPI == 'cli') {
             return;
         }
-        $sessionConfig = $this->getConfigVar('session');
+        $sessionConfig = $this->getCommonConfigVar('session');
 
         if (!empty($sessionConfig['no_session_cmd']) && !in_array($this->cmd, $sessionConfig['no_session_cmd'])) {
             if (preg_match('/([^.]+)\.(\D+)$/sim', $_SERVER['HTTP_HOST'], $regs)) {
