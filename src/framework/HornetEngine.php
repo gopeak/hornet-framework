@@ -954,8 +954,7 @@ class HornetEngine
             } else {
                 $cookieDomain = $_SERVER['HTTP_HOST'];
             }
-
-            ini_set('session.cookieDomain', $cookieDomain);
+            ini_set('session.cookie_domain', $cookieDomain);
             if (isset($sessionConfig['session.cache_expire'])) {
                 ini_set('session.cache_expire', $sessionConfig['session.cache_expire']);
             }
@@ -974,7 +973,6 @@ class HornetEngine
             if (!empty($sessionConfig['session.gc_probability'])) {
                 ini_set('session.gc_probability', $sessionConfig['session.gc_probability']);
             }
-
             if (isset($_GET['session_id']) && !empty($_GET['session_id'])) {
                 session_id($_GET['session_id']);
             }
