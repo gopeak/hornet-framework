@@ -822,19 +822,15 @@ class HornetEngine
             $ajaxProtocol->builder($e->getCode(), [], $e->getMessage());
             echo $ajaxProtocol->getResponse();
         } else {
-            if (isset($this->tplEngine) && $this->tplEngine == 'twig') {
-                throw  $e;
-            }else{
-                $traces = [];
-                if ($this->enableTrace) {
-                    $traces = var_export($e->getTrace(), true);
-                }
-                $vars = [];
-                $vars['traces'] = $traces;
-                $vars['code'] = $e->getCode();
-                $vars['message'] = $e->getMessage();
-                $this->render($this->exceptionPage, $vars);
+            $traces = [];
+            if ($this->enableTrace) {
+                $traces = var_export($e->getTrace(), true);
             }
+            $vars = [];
+            $vars['traces'] = $traces;
+            $vars['code'] = $e->getCode();
+            $vars['message'] = $e->getMessage();
+            $this->render($this->exceptionPage, $vars);
         }
         // 逻辑异常不记录日志
         if (strpos(get_class($e), 'LogicException') !== false) {
