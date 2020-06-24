@@ -950,6 +950,10 @@ class HornetEngine
             } else {
                 $cookieDomain = $_SERVER['SERVER_NAME'];
             }
+            $arr = explode('.', $_SERVER['SERVER_NAME']);
+            if( count($arr) > 3 ){
+                $cookieDomain = $_SERVER['SERVER_NAME'];
+            }
             ini_set('session.cookie_domain', $cookieDomain);
             if (isset($sessionConfig['session.cache_expire'])) {
                 ini_set('session.cache_expire', $sessionConfig['session.cache_expire']);
