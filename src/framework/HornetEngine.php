@@ -932,6 +932,27 @@ class HornetEngine
     }
 
     /**
+     * 获取域名
+     * @return mixed|string
+     */
+    private function getCookieHost()
+    {
+        if (preg_match('/([^.]+)\.(\D+)$/sim', $_SERVER['HTTP_HOST'], $regs)) {
+            $arr = explode('.', $_SERVER['HTTP_HOST']);
+            $cookieDomain = '.' . $arr[count($arr) - 2] . '.' . $arr[count($arr) - 1];
+        } else {
+            $cookieDomain = $_SERVER['HTTP_HOST'];
+        }
+        $arr = explode('.', $_SERVER['HTTP_HOST']);
+        if( count($arr) > 3 ){
+            $cookieDomain = $_SERVER['HTTP_HOST'];
+        }
+        list($cookieDomain) = explode(':',$_SERVER['HTTP_HOST']);
+        //var_dump($cookieDomain);
+        return $cookieDomain;
+    }
+
+    /**
      * 控制会话有效期
      *
      * @return void
@@ -944,17 +965,10 @@ class HornetEngine
         $sessionConfig = $this->getCommonConfigVar('session');
 
         if (!empty($sessionConfig['no_session_cmd']) && !in_array($this->cmd, $sessionConfig['no_session_cmd'])) {
-            if (preg_match('/([^.]+)\.(\D+)$/sim', $_SERVER['HTTP_HOST'], $regs)) {
-                $arr = explode('.', $_SERVER['HTTP_HOST']);
-                $cookieDomain = '.' . $arr[count($arr) - 2] . '.' . $arr[count($arr) - 1];
-            } else {
-                $cookieDomain = $_SERVER['HTTP_HOST'];
-            }
-            ini_set('session.cookie_domain', $cookieDomain);
+            ini_set('session.cookie_domain', $this->getCookieHost());
             if (isset($sessionConfig['session.cache_expire'])) {
                 ini_set('session.cache_expire', $sessionConfig['session.cache_expire']);
             }
-
             if (isset($sessionConfig['session.gc_maxlifetime'])) {
                 ini_set('session.gc_maxlifetime', $sessionConfig['session.gc_maxlifetime']);
             }
