@@ -95,10 +95,8 @@ if (!function_exists('closeResources')) {
         if (function_exists('get_resources')) {
 
             $res_types = [
-                'curl' => 'curl_close',
-                'gd' => 'imagedestroy',
+                'curl' => 'curl_close', 
                 'imap' => 'imap_close',
-                'pdf' => 'PDF_close',
                 'shmop' => 'shmop_close',
                 'stream' => 'fclose',
                 'xml' => 'xml_parser_free',
@@ -106,16 +104,24 @@ if (!function_exists('closeResources')) {
                 'pdf' => 'PDF_close',
 
             ];
+            if (version_compare(PHP_VERSION, '8.0.0') >= 0) {
+                //echo 'php 版本: ' . PHP_VERSION . " 忽略\n";
+                return;
+            }
             foreach ($res_types as $res_name => $close_function) {
                 if (!function_exists($close_function)) {
                     break;
-                }
-                $resources = get_resources($res_name);
-                if (!empty($resources)) {
-                    foreach ($resources as $res) {
-                        @$close_function($res);
-                    }
-                }
+                } 
+				try{
+					$resources = get_resources($res_name);
+					if (!empty($resources)) {
+						foreach ($resources as $res) {
+							@$close_function($res);
+						}
+					}
+				}catch(\Exception $e){
+					// inogre
+				}
             }
 
         }
